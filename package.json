@@ -1,0 +1,29 @@
+{
+  "name": "barteryuk-orchestrator",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "apollo-server": "^2.14.0",
+    "axios": "^0.19.2",
+    "dotenv": "^8.2.0",
+    "graphql": "^15.0.0",
+    "ioredis": "^4.17.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "nodemon app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/barteryuk/barteryuk-orchestrator.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/barteryuk/barteryuk-orchestrator/issues"
+  },
+  "homepage": "https://github.com/barteryuk/barteryuk-orchestrator#readme"
+}
