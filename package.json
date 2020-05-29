@@ -10,8 +10,12 @@
     "ioredis": "^4.17.1"
   },
   "devDependencies": {
+    "apollo-link": "^1.2.14",
+    "apollo-link-http": "^1.5.17",
+    "apollo-server-testing": "^2.14.1",
     "dotenv": "^8.2.0",
     "jest": "^26.0.1",
+    "node-fetch": "^2.6.0",
     "supertest": "^4.0.2"
   },
   "scripts": {

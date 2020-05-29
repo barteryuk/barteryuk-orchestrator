@@ -11,13 +11,31 @@ const typeDefs = gql`
     status: Boolean!
   }
 
+  type Admin {
+    _id: ID!
+    email: String!
+    password: String!
+  }
+
   type ResponseUser {
     status: String!
     message: String!
     user: User
   }
 
+  type ResponseAdmin {
+    status: String!
+    message: String!
+    admin: Admin
+  }
+
   type ResponseLogin {
+    status: String!
+    message: String!
+    access_token: String!
+  }
+
+  type ResponseLoginAdmin {
     status: String!
     message: String!
     access_token: String!
@@ -32,9 +50,16 @@ const typeDefs = gql`
     status: Boolean!
   }
 
+  input InputAdmin {
+    email: String!
+    password: String!
+  }
+
   type Query {
     users: [User]
     user(email: String!): ResponseUser
+    admins: [Admin]
+    admin(email: String!): ResponseAdmin
   }
 
   type Mutation {
@@ -42,6 +67,11 @@ const typeDefs = gql`
     updateUser(_id: ID!, user: InputUser): ResponseUser
     deleteUser(_id: ID!): ResponseUser
     login(email: String!, password: String!): ResponseLogin
+
+    addAdmin(admin: InputAdmin): ResponseAdmin
+    updateAdmin(_id: ID!, admin: InputAdmin): ResponseAdmin
+    deleteAdmin(_id: ID!): ResponseAdmin
+    loginAdmin(email: String!, password: String!): ResponseLoginAdmin
   }
 `;
 
