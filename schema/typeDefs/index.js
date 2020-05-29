@@ -5,18 +5,31 @@ const typeDefs = gql`
     _id: ID!
     email: String!
     password: String!
+    hp: String!
+    rating: Int!
+    quota: Int!
+    status: Boolean!
   }
 
   type ResponseUser {
     status: String!
     message: String!
-    token: String
     user: User
+  }
+
+  type ResponseLogin {
+    status: String!
+    message: String!
+    access_token: String!
   }
 
   input InputUser {
     email: String!
     password: String!
+    hp: String!
+    rating: Int!
+    quota: Int!
+    status: Boolean!
   }
 
   type Query {
@@ -28,6 +41,7 @@ const typeDefs = gql`
     addUser(user: InputUser): ResponseUser
     updateUser(_id: ID!, user: InputUser): ResponseUser
     deleteUser(_id: ID!): ResponseUser
+    login(email: String!, password: String!): ResponseLogin
   }
 `;
 

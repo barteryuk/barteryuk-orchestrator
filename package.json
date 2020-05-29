@@ -6,14 +6,18 @@
   "dependencies": {
     "apollo-server": "^2.14.0",
     "axios": "^0.19.2",
-    "dotenv": "^8.2.0",
     "graphql": "^15.0.0",
     "ioredis": "^4.17.1"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "dotenv": "^8.2.0",
+    "jest": "^26.0.1",
+    "supertest": "^4.0.2"
+  },
   "scripts": {
-    "start": "nodemon app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "NODE_ENV=test jest --detectOpenHandles --runInBand",
+    "dev": "NODE_ENV=development nodemon app.js",
+    "start": "NODE_ENV=production node app.js"
   },
   "repository": {
     "type": "git",

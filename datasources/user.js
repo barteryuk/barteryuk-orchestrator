@@ -53,6 +53,10 @@ class Controller {
             _id: "not found",
             email: args.email,
             password: "not found",
+            hp: "not found",
+            rating: 0,
+            quota: 0,
+            status: true,
           },
         };
       }
@@ -66,7 +70,14 @@ class Controller {
       const result = await axios({
         url: baseUrl,
         method: "POST",
-        data: args.user,
+        data: {
+          email: args.user.email,
+          password: args.user.password,
+          hp: args.user.hp,
+          rating: 5,
+          quota: 2,
+          status: false,
+        },
       });
       const { data } = result;
       if (!data.errors) {
@@ -117,6 +128,10 @@ class Controller {
         if (filtered !== undefined) {
           filtered.email = args.user.email || null;
           filtered.password = args.user.password || null;
+          filtered.hp = args.user.hp || null;
+          filtered.rating = args.user.rating || null;
+          filtered.quota = args.user.quota || null;
+          filtered.status = args.user.status || null;
           notFiltered.push(filtered);
           redis.del("users");
           redis.set("users", JSON.stringify(notFiltered));
@@ -178,6 +193,32 @@ class Controller {
       }
     } catch (error) {
       return console.log("error : ", error);
+    }
+  }
+
+  static async login(_, args) {
+    try {
+      const result = await axios({
+        url: baseUrl + "login",
+        method: "POST",
+        data: {
+          email: args.email,
+          password: args.password,
+        },
+      });
+      const { data } = result;
+
+      return {
+        status: 200,
+        message: "Orchestrator successfully logged in user to userService",
+        access_token: data.access_token,
+      };
+    } catch (error) {
+      return {
+        status: error.response.data.status,
+        message: error.response.data.message,
+        access_token: "not found",
+      };
     }
   }
 }
