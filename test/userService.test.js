@@ -58,7 +58,7 @@ describe("User Service", () => {
             }
           });
       });
-      describe("Failed Non Unique", () => {
+      describe("Failed Email Non Unique", () => {
         test("should return object with status 400", (done) => {
           request(app)
             .post("/users")
@@ -125,23 +125,6 @@ describe("User Service", () => {
             });
         });
       });
-      describe("Failed Password Field Does Not Exist", () => {
-        test("should return empty object with status 500", (done) => {
-          request(app)
-            .post("/users")
-            .send({ email: "userDummy2@mail.com", password: null })
-            .end((err, res) => {
-              if (err) {
-                console.log(err);
-                return done(err);
-              } else {
-                console.log(res.body);
-                expect(res.status).toBe(500);
-                return done();
-              }
-            });
-        });
-      });
       describe("Failed Email type is not a@a.a", () => {
         test("should return object with status 400", (done) => {
           request(app)
@@ -156,6 +139,49 @@ describe("User Service", () => {
                 expect(res.body).toHaveProperty(
                   "message",
                   "Database Validation: a is not a valid email"
+                );
+                return done();
+              }
+            });
+        });
+      });
+      describe("Failed Password Field Does Not Exist", () => {
+        test("should return empty object with status 500", (done) => {
+          request(app)
+            .post("/users")
+            .send({ email: "userDummy2@mail.com" })
+            .end((err, res) => {
+              if (err) {
+                console.log(err);
+                return done(err);
+              } else {
+                expect(res.status).toBe(500);
+                return done();
+              }
+            });
+        });
+      });
+      describe("Failed Hp Field Does Not Exist", () => {
+        test("should return object with status 400", (done) => {
+          request(app)
+            .post("/users")
+            .send({
+              email: "userDummy@mail.com",
+              password: "1",
+              hp: "",
+              rating: 5,
+              quota: 2,
+              status: false,
+            })
+            .end((err, res) => {
+              if (err) {
+                console.log(err);
+                return done(err);
+              } else {
+                expect(res.status).toBe(400);
+                expect(res.body).toHaveProperty(
+                  "message",
+                  "Database Validation: Hp is required"
                 );
                 return done();
               }
