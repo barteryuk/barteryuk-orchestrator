@@ -14,11 +14,7 @@ const constructTestServer = () => {
   const userAPI = new UserAPI();
   const adminAPI = new AdminAPI();
 
-  const server = new ApolloServer({
-    typeDefs,
-    resolvers,
-  });
-
+  const server = new ApolloServer({ typeDefs, resolvers });
   return { server, userAPI, adminAPI };
 };
 
