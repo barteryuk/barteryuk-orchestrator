@@ -6,7 +6,7 @@ const typeDefs = gql`
     email: String!
     password: String!
     hp: String!
-    rating: Int!
+    rating: Float!
     quota: Int!
     status: Boolean!
   }
@@ -64,6 +64,11 @@ const typeDefs = gql`
     password: String!
   }
 
+  input InputFinalBidder {
+    FinalBidderId: String!
+    FinalBidderRating: Int!
+  }
+
   type Query {
     users: [User]
     user(email: String!): ResponseUser
@@ -82,6 +87,8 @@ const typeDefs = gql`
     updateAdmin(_id: ID!, admin: InputAdmin): ResponseAdmin
     deleteAdmin(_id: ID!): ResponseAdmin
     loginAdmin(email: String!, password: String!): ResponseLoginAdmin
+
+    updateRating(FinalBidder: InputFinalBidder): ResponseUser
   }
 `;
 

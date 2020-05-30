@@ -221,6 +221,72 @@ class Controller {
       };
     }
   }
+
+  static async updateRating(_, args) {
+    try {
+      const { data: dataToUpdate } = await axios({
+        url: baseUrl,
+        method: "GET",
+      });
+
+      const [filteredToUpdate] = dataToUpdate.filter(
+        (el) => el._id === args.FinalBidder.FinalBidderId
+      );
+
+      filteredToUpdate.rating = (
+        (args.FinalBidder.FinalBidderRating + filteredToUpdate.rating) /
+        2
+      ).toFixed(1);
+
+      const { data } = await axios({
+        url: baseUrl + args.FinalBidder.FinalBidderId,
+        method: "PUT",
+        data: filteredToUpdate,
+      });
+
+      const users = JSON.parse(await redis.get("users"));
+      if (users) {
+        const notFiltered = users.filter(
+          (el) => el._id !== args.FinalBidder.FinalBidderId
+        );
+        const [filtered] = users.filter(
+          (el) => el._id === args.FinalBidder.FinalBidderId
+        );
+
+        if (filtered !== undefined) {
+          filtered.email = filteredToUpdate.email || null;
+          filtered.password = filteredToUpdate.password || null;
+          filtered.hp = filteredToUpdate.hp || null;
+          filtered.rating = filteredToUpdate.rating || null;
+          filtered.quota = filteredToUpdate.quota || null;
+          filtered.status = filteredToUpdate.status || null;
+          notFiltered.push(filtered);
+          redis.del("users");
+          redis.set("users", JSON.stringify(notFiltered));
+        }
+      } else {
+        const { data: dataGet } = await axios({
+          url: baseUrl,
+          method: "GET",
+        });
+        redis.set("users", JSON.stringify(dataGet));
+      }
+      if (data === null) {
+        return {
+          status: 404,
+          message: "Orchestrator Validation: User not found",
+        };
+      } else {
+        return {
+          status: 200,
+          message: "Orchestrator successfully updated data to userService",
+          user: data,
+        };
+      }
+    } catch (error) {
+      return console.log("error : ", error);
+    }
+  }
 }
 
 module.exports = Controller;
