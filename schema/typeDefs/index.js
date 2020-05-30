@@ -75,6 +75,7 @@ const typeDefs = gql`
     admins: [Admin]
     admin(email: String!): ResponseAdmin
     products: [Product]
+    product(productid: ID!): Product
   }
 
   type Mutation {

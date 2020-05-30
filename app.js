@@ -5,7 +5,7 @@ if (process.env.NODE_ENV !== "production") {
 const { ApolloServer } = require("apollo-server");
 const typeDefs = require("./schema/typeDefs");
 const resolvers = require("./schema/resolvers");
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 3999;
 
 const server = new ApolloServer({ typeDefs, resolvers });
 
