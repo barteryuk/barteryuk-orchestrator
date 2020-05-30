@@ -17,6 +17,15 @@ const typeDefs = gql`
     password: String!
   }
 
+  type Product {
+    _id: ID!
+    title: String!
+    description: String
+    photo: String!
+    value: Float!
+    UserId: String!
+  }
+
   type ResponseUser {
     status: String!
     message: String!
@@ -60,6 +69,7 @@ const typeDefs = gql`
     user(email: String!): ResponseUser
     admins: [Admin]
     admin(email: String!): ResponseAdmin
+    products: [Product]
   }
 
   type Mutation {
