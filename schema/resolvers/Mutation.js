@@ -11,6 +11,8 @@ const Mutation = {
   updateAdmin: adminController.put,
   deleteAdmin: adminController.delete,
   loginAdmin: adminController.login,
+
+  updateRating: userController.updateRating,
 };
 
 module.exports = Mutation;
