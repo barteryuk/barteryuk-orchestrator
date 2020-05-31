@@ -48,6 +48,8 @@ const typeDefs = gql`
   type ResponseLogin {
     status: String!
     message: String!
+    email: String!
+    userId: ID!
     access_token: String!
   }
 
@@ -102,11 +104,9 @@ const typeDefs = gql`
     loginAdmin(email: String!, password: String!): ResponseLoginAdmin
 
     updateRating(FinalBidder: InputFinalBidder): ResponseUser
-<<<<<<< HEAD
     updateStatus(email: String!): ResponseUser
 
     sendMail(email: String!): ResponseMail
-=======
 
     uploadImage(filename: String!): String!    
 
@@ -116,7 +116,6 @@ const typeDefs = gql`
       value: Float!,
       photopath: String!,
     ): Product
->>>>>>> mh1
   }
 `;
 
