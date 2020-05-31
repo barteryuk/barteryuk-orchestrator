@@ -3,6 +3,22 @@ const request = require("supertest");
 
 describe("Admin Service", () => {
   let dummyId = "";
+  describe("Connected to adminService", () => {
+    test("should return text with status 200", (done) => {
+      request(app)
+        .get("/")
+        .end((err, res) => {
+          if (err) {
+            console.log(err);
+            return done(err);
+          } else {
+            expect(res.status).toBe(200);
+            expect(res).toHaveProperty("text", "welcome to adminService");
+            return done();
+          }
+        });
+    });
+  });
   describe("Successful Create", () => {
     test("should return object with status 201 and one user", (done) => {
       request(app)

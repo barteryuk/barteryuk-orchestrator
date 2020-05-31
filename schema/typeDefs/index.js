@@ -50,6 +50,11 @@ const typeDefs = gql`
     access_token: String!
   }
 
+  type ResponseMail {
+    status: String!
+    message: String!
+  }
+
   input InputUser {
     email: String!
     password: String!
@@ -90,6 +95,8 @@ const typeDefs = gql`
     loginAdmin(email: String!, password: String!): ResponseLoginAdmin
 
     updateRating(FinalBidder: InputFinalBidder): ResponseUser
+
+    sendMail(email: String!): ResponseMail
   }
 `;
 
