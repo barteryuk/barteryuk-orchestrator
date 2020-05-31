@@ -26,7 +26,7 @@ class Controller {
                     url: `${baseUrl}getall`,
                     method: "GET",
                 });
-                redis.set("users", JSON.stringify(data.data));
+                redis.set("products", JSON.stringify(data.data));
                 return data.data;
             }
         } catch (error) {
@@ -148,6 +148,34 @@ class Controller {
       }
 
 
+    }
+
+    static async findOwnItems(parent, args, context, info) {
+        console.log("FIND OWN ITEMS @ ORCHESTRATOR");
+        //  DECODE TOKEN
+        token = context.token
+        // payload = jwt.verify(token, process.env.SECRET)
+
+        console.log("TOKEN IS: ,", token);
+
+        try {
+            const ownItems = JSON.parse(await redis.get("ownItems"));
+            if (ownItems) {
+                return ownItems;
+            } else {
+                const {data} = await axios({
+                    url: `${baseUrl}myItems`,
+                    method: "GET",
+                    headers: {
+                        access_token: token
+                    }
+                });
+                redis.set("ownItems", JSON.stringify(data.data));
+                return data.data;
+            }
+        } catch (error) {
+            return console.log("error : ", error);
+        }
     }
 }
 

@@ -7,6 +7,7 @@ const Query = {
   user: userController.findByName,
   products: productController.findAll,
   product: productController.findOne,
+  ownItems: productController.findOwnItems,
   admins: adminController.findAll,
   admin: adminController.findByName,
 };
