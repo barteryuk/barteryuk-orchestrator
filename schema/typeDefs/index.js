@@ -89,6 +89,7 @@ const typeDefs = gql`
     admin(email: String!): ResponseAdmin
     products: [Product]
     product(productid: ID!): Product
+    ownItems: [Product]
   }
 
   type Mutation {
