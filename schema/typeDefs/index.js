@@ -1,11 +1,10 @@
 const { gql } = require("apollo-server");
 
 const typeDefs = gql`
-
   type File {
-      filename: String!
-      mimetype: String!
-      encoding: String!
+    filename: String!
+    mimetype: String!
+    encoding: String!
   }
 
   type User {
@@ -102,21 +101,18 @@ const typeDefs = gql`
     loginAdmin(email: String!, password: String!): ResponseLoginAdmin
 
     updateRating(FinalBidder: InputFinalBidder): ResponseUser
-<<<<<<< HEAD
     updateStatus(email: String!): ResponseUser
 
     sendMail(email: String!): ResponseMail
-=======
 
-    uploadImage(filename: String!): String!    
+    uploadImage(filename: String!): String!
 
     addProduct(
-      title: String!, 
-      description: String, 
-      value: Float!,
-      photopath: String!,
+      title: String!
+      description: String
+      value: Float!
+      photopath: String!
     ): Product
->>>>>>> mh1
   }
 `;
 

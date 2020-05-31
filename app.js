@@ -4,17 +4,16 @@ if (process.env.NODE_ENV !== "production") {
 
 const { ApolloServer, AuthenticationError } = require("apollo-server");
 const typeDefs = require("./schema/typeDefs");
-const jwt = require('jsonwebtoken')
+const jwt = require("jsonwebtoken");
 const resolvers = require("./schema/resolvers");
 const PORT = process.env.PORT || 4000;
 
 // USE CONTEXT
 const context = ({ req }) => {
-
-  const token = req.headers.access_token || ''
+  const token = req.headers.access_token || "";
   // console.log("WHAT IS TOKEN?")
   // console.log(token)
-  return {token: token}
+  return { token: token };
   // try {
   //   jwt.verify(token, process.env.SECRET)
   // }
@@ -23,14 +22,12 @@ const context = ({ req }) => {
   //       'Authentication token is invalid, please log in'
   //   )
   // }
-
-}
-
-const server = new ApolloServer({ 
-    typeDefs, 
-    resolvers
-    ,context
-  });
+};
+const server = new ApolloServer({
+  typeDefs,
+  resolvers,
+  context,
+});
 
 if (process.env.NODE_ENV === "test") {
   const app = () =>
