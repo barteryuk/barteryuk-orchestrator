@@ -47,6 +47,8 @@ const typeDefs = gql`
   type ResponseLogin {
     status: String!
     message: String!
+    email: String!
+    userId: ID!
     access_token: String!
   }
 
