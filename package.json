@@ -24,7 +24,7 @@
   },
   "scripts": {
     "test": "NODE_ENV=test jest --detectOpenHandles --runInBand",
-    "dev": "NODE_ENV=development nodemon app.js",
+    "dev": "nodemon app.js",
     "start": "NODE_ENV=production node app.js"
   },
   "repository": {

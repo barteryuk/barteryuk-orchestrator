@@ -211,6 +211,8 @@ class Controller {
       return {
         status: 200,
         message: "Orchestrator successfully logged in user to userService",
+        email: data.email,
+        userId: data.userId,
         access_token: data.access_token,
       };
     } catch (error) {
