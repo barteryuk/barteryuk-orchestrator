@@ -279,10 +279,45 @@ class Controller {
       } else {
         return {
           status: 200,
-          message: "Orchestrator successfully updated data to userService",
+          message: "Orchestrator successfully updated rating to userService",
           user: data,
         };
       }
+    } catch (error) {
+      return console.log("error : ", error);
+    }
+  }
+
+  static async updateStatus(_, args) {
+    try {
+      const {
+        data: [dataToUpdate],
+      } = await axios({
+        url: baseUrl + args.email,
+        method: "GET",
+      });
+
+      dataToUpdate.status = !dataToUpdate.status;
+
+      const { data } = await axios({
+        url: baseUrl + dataToUpdate._id,
+        method: "PUT",
+        data: dataToUpdate,
+      });
+
+      const { data: dataForRedis } = await axios({
+        url: baseUrl,
+        method: "GET",
+      });
+
+      redis.del("users");
+      redis.set("users", JSON.stringify(dataForRedis));
+
+      return {
+        status: 200,
+        message: "Orchestrator successfully updated status to userService",
+        user: data,
+      };
     } catch (error) {
       return console.log("error : ", error);
     }

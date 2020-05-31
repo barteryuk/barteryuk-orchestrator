@@ -95,6 +95,7 @@ const typeDefs = gql`
     loginAdmin(email: String!, password: String!): ResponseLoginAdmin
 
     updateRating(FinalBidder: InputFinalBidder): ResponseUser
+    updateStatus(email: String!): ResponseUser
 
     sendMail(email: String!): ResponseMail
   }

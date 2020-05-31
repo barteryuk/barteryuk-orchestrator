@@ -12,6 +12,9 @@ const Mutation = {
   // RATING
   updateRating: userController.updateRating,
 
+  // STATUS (BANNED)
+  updateStatus: userController.updateStatus,
+
   // NOTIFICATION
   sendMail: mailController.sendMail,
 
