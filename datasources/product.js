@@ -1,9 +1,19 @@
 const axios = require("axios");
 const Redis = require("ioredis");
 const redis = new Redis();
+const cloudinary = require('cloudinary')
+const jwt = require('jsonwebtoken')
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+})
 
 const baseUrl = process.env.PRODUCTAPI;
 var arr
+var token
+var payload
 
 class Controller {
     static async findAll() {
@@ -74,6 +84,70 @@ class Controller {
         } catch (error) {
             return console.log("error : ", error);
         }
+    }
+
+    static async addProduct(parent, args, context, info) {
+        console.log("ADD PRODUCT FROM ORCHESTRATOR");
+
+        console.log("ARGS IS: ");
+        console.log(args, "\n");
+
+
+        // console.log("PARENT IS: ");
+        // console.log(parent, "\n");
+
+        console.log("CONTEXT IS: ");
+        console.log(context, "\n");
+
+        // console.log("INFO IS: ");
+        // console.log(info, "\n");
+
+
+        //DECOMPOSE ARGS
+        var {title, description, value, photopath} = args
+
+        //  DECODE TOKEN
+        token = context.token
+        // payload = jwt.verify(token, process.env.SECRET)
+
+        console.log("TOKEN IS: ,", token);
+        // console.log("PAYLOAD IS: ,", payload);
+
+
+        // UPLOAD IMAGE TO CLOUDINARY FIRST
+        // FROM YOUTUBE
+      const photo = await cloudinary.v2.uploader.upload(photopath)
+      console.log(photo)
+
+      var photoname = `${photo.public_id}.${photo.format}`
+
+      try {
+
+          const {data} = await axios({
+                url: `${baseUrl}add`,
+                method: "POST",
+                headers: {
+                    access_token: token
+                },
+                data: {
+                    title: title,
+                    description: description,
+                    value: value,
+                    photo: photoname
+                }
+            });
+
+            console.log("DO WE SUCCEED ADD PRODUCT @ ORCHESTRATOR?");
+            console.log(data.data);
+            redis.del("products");
+            return data.data;
+
+      }
+      catch(error) {
+          return console.error(error)
+      }
+
+
     }
 }
 
