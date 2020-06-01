@@ -14,6 +14,8 @@ const baseUrl = process.env.PRODUCTAPI;
 var arr
 var token
 var payload
+var products
+var result
 
 class Controller {
     static async findAll() {
@@ -27,6 +29,8 @@ class Controller {
                     method: "GET",
                 });
                 redis.set("products", JSON.stringify(data.data));
+                console.log("\n", "THIS IS RETRIEVED DATA", "\n");
+                console.log(data.data, "\n")
                 return data.data;
             }
         } catch (error) {
@@ -150,32 +154,125 @@ class Controller {
 
     }
 
+    // static async findOwnItems(parent, args, context, info) {
+    //     console.log("FIND OWN ITEMS @ ORCHESTRATOR");
+    //     //  DECODE TOKEN
+    //     token = context.token
+    //     // payload = jwt.verify(token, process.env.SECRET)
+
+    //     console.log("TOKEN IS: ,", token);
+
+    //     try {
+    //         const ownItems = JSON.parse(await redis.get("ownItems"));
+    //         if (ownItems) {
+    //             return ownItems;
+    //         } else {
+    //             const {data} = await axios({
+    //                 url: `${baseUrl}myItems`,
+    //                 method: "GET",
+    //                 headers: {
+    //                     access_token: token
+    //                 }
+    //             });
+    //             redis.set("ownItems", JSON.stringify(data.data));
+    //             return data.data;
+    //         }
+    //     } catch (error) {
+    //         return console.log("error : ", error);
+    //     }
+    // }
+
+    // CACHING FINDOWNITEMS
     static async findOwnItems(parent, args, context, info) {
         console.log("FIND OWN ITEMS @ ORCHESTRATOR");
         //  DECODE TOKEN
         token = context.token
-        // payload = jwt.verify(token, process.env.SECRET)
+        payload = jwt.verify(token, process.env.SECRET)
 
         console.log("TOKEN IS: ,", token);
+        console.log("PAYLOAD IS ,", payload);
+        var ownItems = []
 
         try {
-            const ownItems = JSON.parse(await redis.get("ownItems"));
-            if (ownItems) {
-                return ownItems;
+            products = JSON.parse(await redis.get("products"));
+            
+            if (products) {
+                ownItems = products.filter(product => product.userId == payload._id)
+                
             } else {
                 const {data} = await axios({
-                    url: `${baseUrl}myItems`,
-                    method: "GET",
-                    headers: {
-                        access_token: token
-                    }
+                    url: `${baseUrl}getall`,
+                    method: "GET"
+                    // ,headers: {
+                    //     access_token: token
+                    // }
                 });
-                redis.set("ownItems", JSON.stringify(data.data));
-                return data.data;
+                products = data.data
+                redis.del("products");
+                redis.set("products", JSON.stringify(products));
+                ownItems = products.filter(product => product.userId == payload._id)
+                
             }
+            redis.set("ownItems", JSON.stringify(ownItems));
+            return ownItems;
+
         } catch (error) {
             return console.log("error : ", error);
         }
+    }
+
+
+    // SELECT COLLATERAL
+    static async bidItem (parent, args, context, info) {
+        console.log("SELECT COLLATERAL @ ORCHESTRATOR");
+        console.log(args);
+        var itemId = args.itemId
+        var collateralId = args.collateralId
+
+        token = context.token
+        payload = jwt.verify(token, process.env.SECRET)
+
+        console.log("TOKEN IS: ,", token);
+        console.log("PAYLOAD IS ,", payload);
+
+        try {
+            
+            
+            var {data} = await axios({
+                    url: `${baseUrl}bid/${itemId}/with/${collateralId}`,
+                    method: "PUT"
+                    ,headers: {
+                        access_token: token
+                    }
+                });
+            
+            var bidmsg = data
+            
+            redis.del("products")
+
+            console.log("WHAT'S FROM AXIOS?");
+            console.log(bidmsg, "\n")
+
+            console.log("WHAT'S BIDPRODUCTID");
+            console.log(bidmsg.result.bidProductId, "\n")
+
+            console.log("WHAT'S BIDPRODUCTID");
+            console.log(bidmsg.result.bidProductId[bidmsg.result.bidProductId.length-1], "\n")
+
+            // REDIS REFETCH DATA
+             var newdata = await axios({
+                    url: `${baseUrl}getall`,
+                    method: "GET",
+                });
+                redis.set("products", JSON.stringify(newdata.data));
+
+            return bidmsg
+
+        }
+        catch (error) {
+            return console.log("error : ", error);
+        }
+
     }
 }
 

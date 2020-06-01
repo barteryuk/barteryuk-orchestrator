@@ -23,14 +23,32 @@ const typeDefs = gql`
     password: String!
   }
 
+  type BidderProduct {
+    _id: ID
+    title: String
+    description: String
+    value: Float
+    userId: String
+    photo: String
+    category: String
+  }
+
   type Product {
     _id: ID!
     title: String!
     description: String
+    bidProductId: [BidderProduct]
     value: Float!
-    UserId: String
+    userId: String
     photo: String!
+    category: String
   }
+
+  type ResponseProduct {
+    message: String,
+    result: Product
+  }
+
 
   type ResponseUser {
     status: String!
@@ -116,6 +134,13 @@ const typeDefs = gql`
       value: Float!
       photopath: String!
     ): Product
+
+
+    bidItem(
+      itemId: ID!
+      collateralId: ID!
+    ): ResponseProduct
+
   }
 `;
 
