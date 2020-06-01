@@ -44,6 +44,8 @@ const typeDefs = gql`
     photo: String!
     category: String
     tags: [String]
+    productOwnerRating: Float!
+    finalBidderRating: Float!
   }
 
   type ResponseProduct {
