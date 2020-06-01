@@ -108,7 +108,7 @@ class Controller {
 
 
         //DECOMPOSE ARGS
-        var {title, description, value, category, photopath} = args
+        var {title, description, value, category, tagStr, photopath} = args
 
         //  DECODE TOKEN
         token = context.token
@@ -137,8 +137,9 @@ class Controller {
                     title: title,
                     description: description,
                     value: value,
-                    photo: photoname,
-                    category: category
+                    photopath: photoname,
+                    category: category,
+                    tagStr: tagStr
                 }
             });
 
@@ -258,6 +259,60 @@ class Controller {
             console.log(bidmsg.result.bidProductId, "\n")
 
             console.log("WHAT'S BIDPRODUCTID");
+            console.log(bidmsg.result.bidProductId[bidmsg.result.bidProductId.length-1], "\n")
+
+            // REDIS REFETCH DATA
+             var newdata = await axios({
+                    url: `${baseUrl}getall`,
+                    method: "GET",
+                });
+                redis.set("products", JSON.stringify(newdata.data));
+
+            return bidmsg
+
+        }
+        catch (error) {
+            return console.log("error : ", error);
+        }
+
+    }
+
+
+    // REJECT BID
+    static async rejectBid (parent, args, context, info) {
+        console.log("SELECT COLLATERAL @ ORCHESTRATOR");
+        console.log(args);
+        var itemId = args.itemId
+        var collateralId = args.collateralId
+
+        token = context.token
+        payload = jwt.verify(token, process.env.SECRET)
+
+        console.log("TOKEN IS: ,", token);
+        console.log("PAYLOAD IS ,", payload);
+
+        try {
+            
+            
+            var {data} = await axios({
+                    url: `${baseUrl}rejectBid/${itemId}/with/${collateralId}`,
+                    method: "PUT"
+                    ,headers: {
+                        access_token: token
+                    }
+                });
+            
+            var bidmsg = data
+            
+            redis.del("products")
+
+            console.log("WHAT'S FROM AXIOS?");
+            console.log(bidmsg, "\n")
+
+            console.log("WHAT'S NOW AFTER REJECT?");
+            console.log(bidmsg.result.bidProductId, "\n")
+
+            console.log("WHO'S LAST REMAINING BIDPRODUCTID?");
             console.log(bidmsg.result.bidProductId[bidmsg.result.bidProductId.length-1], "\n")
 
             // REDIS REFETCH DATA
