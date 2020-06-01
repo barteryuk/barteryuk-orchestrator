@@ -19,15 +19,23 @@ var result
 
 class Controller {
     static async findAll() {
+        console.log("FIND ALL ITEMS @ ORCHESTRATOR");
+
         try {
             const products = JSON.parse(await redis.get("products"));
+            console.log("HAVE WE GOT PRODUCTS?");
+            console.log(products);
             if (products) {
+                console.log("CACHE STILL ON");
                 return products;
             } else {
+                console.log("NO CACHE")
                 const {data} = await axios({
                     url: `${baseUrl}getall`,
                     method: "GET",
                 });
+                console.log("WHAT'S PRODUCTS ALL?");
+                console.log(data);
                 redis.set("products", JSON.stringify(data.data));
                 console.log("\n", "THIS IS RETRIEVED DATA", "\n");
                 console.log(data.data, "\n")
@@ -59,7 +67,7 @@ class Controller {
             console.log(arr, "\n");
 
 
-            const products = JSON.parse(await redis.get("products"));
+            const products = JSON.parse(await redis.get("products"))
             console.log("WHAT'S PRODUCT CACHE");
             console.log(products, "\n");
             if (products) {
@@ -108,7 +116,7 @@ class Controller {
 
 
         //DECOMPOSE ARGS
-        var {title, description, value, category, photopath} = args
+        var {title, description, value, category, tagStr, photopath} = args
 
         //  DECODE TOKEN
         token = context.token
@@ -137,8 +145,9 @@ class Controller {
                     title: title,
                     description: description,
                     value: value,
-                    photo: photoname,
-                    category: category
+                    photopath: photoname,
+                    category: category,
+                    tagStr: tagStr
                 }
             });
 
@@ -196,9 +205,14 @@ class Controller {
 
         try {
             products = JSON.parse(await redis.get("products"));
+
+            console.log("WHAT IS REDIS' PRODUCTS?");
+            console.log(products);
             
             if (products) {
-                ownItems = products.data.filter(product => product.userId == payload._id)
+
+                // ownItems = products.data.filter(product => product.userId == payload._id)
+                ownItems = products.filter(product => product.userId == payload._id)
                 
             } else {
                 const {data} = await axios({
@@ -209,6 +223,8 @@ class Controller {
                     // }
                 });
                 products = data.data
+                console.log("IS PRODUCTS REALLY DATA.DATA?");
+                console.log(products);
                 redis.del("products");
                 redis.set("products", JSON.stringify(products));
                 ownItems = products.filter(product => product.userId == payload._id)
@@ -265,6 +281,64 @@ class Controller {
                     url: `${baseUrl}getall`,
                     method: "GET",
                 });
+                console.log("MAKING SURE NEWDATA.DATA");
+                console.log(newdata.data);
+                redis.set("products", JSON.stringify(newdata.data));
+
+            return bidmsg
+
+        }
+        catch (error) {
+            return console.log("error : ", error);
+        }
+
+    }
+
+
+    // REJECT BID
+    static async rejectBid (parent, args, context, info) {
+        console.log("SELECT COLLATERAL @ ORCHESTRATOR");
+        console.log(args);
+        var itemId = args.itemId
+        var collateralId = args.collateralId
+
+        token = context.token
+        payload = jwt.verify(token, process.env.SECRET)
+
+        console.log("TOKEN IS: ,", token);
+        console.log("PAYLOAD IS ,", payload);
+
+        try {
+            
+            
+            var {data} = await axios({
+                    url: `${baseUrl}rejectBid/${itemId}/with/${collateralId}`,
+                    method: "PUT"
+                    ,headers: {
+                        access_token: token
+                    }
+                });
+            
+            var bidmsg = data
+            
+            redis.del("products")
+
+            console.log("WHAT'S FROM AXIOS?");
+            console.log(bidmsg, "\n")
+
+            console.log("WHAT'S NOW AFTER REJECT?");
+            console.log(bidmsg.result.bidProductId, "\n")
+
+            console.log("WHO'S LAST REMAINING BIDPRODUCTID?");
+            console.log(bidmsg.result.bidProductId[bidmsg.result.bidProductId.length-1], "\n")
+
+            // REDIS REFETCH DATA
+             var newdata = await axios({
+                    url: `${baseUrl}getall`,
+                    method: "GET",
+                });
+                console.log("MAKING SURE NEWDATA.DATA");
+                console.log(newdata.data);
                 redis.set("products", JSON.stringify(newdata.data));
 
             return bidmsg

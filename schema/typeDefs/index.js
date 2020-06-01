@@ -31,6 +31,7 @@ const typeDefs = gql`
     userId: String
     photo: String
     category: String
+    tags: [String]
   }
 
   type Product {
@@ -42,6 +43,9 @@ const typeDefs = gql`
     userId: String
     photo: String!
     category: String
+    tags: [String]
+    productOwnerRating: Float!
+    finalBidderRating: Float!
   }
 
   type ResponseProduct {
@@ -156,10 +160,16 @@ const typeDefs = gql`
       value: Float!
       photopath: String!
       category: String!
+      tagStr: String
     ): Product
 
 
     bidItem(
+      itemId: ID!
+      collateralId: ID!
+    ): ResponseProduct
+
+    rejectBid(
       itemId: ID!
       collateralId: ID!
     ): ResponseProduct
