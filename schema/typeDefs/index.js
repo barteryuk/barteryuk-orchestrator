@@ -133,6 +133,7 @@ const typeDefs = gql`
       description: String
       value: Float!
       photopath: String!
+      category: String!
     ): Product
 
 

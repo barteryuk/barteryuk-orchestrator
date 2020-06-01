@@ -108,7 +108,7 @@ class Controller {
 
 
         //DECOMPOSE ARGS
-        var {title, description, value, photopath} = args
+        var {title, description, value, category, photopath} = args
 
         //  DECODE TOKEN
         token = context.token
@@ -137,7 +137,8 @@ class Controller {
                     title: title,
                     description: description,
                     value: value,
-                    photo: photoname
+                    photo: photoname,
+                    category: category
                 }
             });
 
