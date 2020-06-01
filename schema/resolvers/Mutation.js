@@ -1,7 +1,9 @@
 const userController = require("../../datasources/user");
 const adminController = require("../../datasources/admin");
 const mailController = require("../../datasources/mail");
+const paymentController = require("../../datasources/payment");
 const productController = require("../../datasources/product");
+
 // const cloudinary = require('cloudinary')
 
 // cloudinary.config({
@@ -32,9 +34,13 @@ const Mutation = {
   deleteAdmin: adminController.delete,
   loginAdmin: adminController.login,
 
+  // PAYMENT
+  addPayment: paymentController.create,
+  updatePayment: paymentController.put,
+
   // PRODUCT
   addProduct: productController.addProduct,
-  bidItem: productController.bidItem
+  bidItem: productController.bidItem,
 
   // async uploadImage(parent, { filename }) {
   //   console.log("UPLOADING IMAGE @ ORCHESTRATOR");
@@ -57,6 +63,9 @@ const Mutation = {
   //     console.log("MAINDIR IS: ", mainDir);
   //     console.log("FILENAME IS: ", filename);
 
+  // const path = require("path");
+  // const mainDir = path.dirname(require.main.filename);
+  // const filename1 = `${}`
 
   //     // FROM YOUTUBE
   //     const photo = await cloudinary.v2.uploader.upload(filename)
@@ -65,7 +74,6 @@ const Mutation = {
   //     return `${photo.public_id}.${photo.format}`
 
   // }
-  
 };
 
 module.exports = Mutation;

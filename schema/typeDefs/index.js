@@ -49,6 +49,18 @@ const typeDefs = gql`
     result: Product
   }
 
+  type Payment {
+    id: ID!
+    email: String!
+    topUp: Int!
+    status: String!
+    createdAt: String!
+    updatedAt: String!
+  }
+
+  type Message {
+    message: String!
+  }
 
   type ResponseUser {
     status: String!
@@ -81,6 +93,12 @@ const typeDefs = gql`
     message: String!
   }
 
+  type ResponsePayment {
+    status: String!
+    message: [Message]
+    payment: Payment
+  }
+
   input InputUser {
     email: String!
     password: String!
@@ -105,6 +123,7 @@ const typeDefs = gql`
     user(email: String!): ResponseUser
     admins: [Admin]
     admin(email: String!): ResponseAdmin
+    payments: [Payment]
     products: [Product]
     product(productid: ID!): Product
     ownItems: [Product]
@@ -125,6 +144,9 @@ const typeDefs = gql`
     updateStatus(email: String!): ResponseUser
 
     sendMail(email: String!): ResponseMail
+
+    addPayment(email: String!, topUp: Int!): ResponsePayment
+    updatePayment(id: ID!, status: String!): ResponsePayment
 
     uploadImage(filename: String!): String!
 
