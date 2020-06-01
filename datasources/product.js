@@ -198,7 +198,7 @@ class Controller {
             products = JSON.parse(await redis.get("products"));
             
             if (products) {
-                ownItems = products.filter(product => product.userId == payload._id)
+                ownItems = products.data.filter(product => product.userId == payload._id)
                 
             } else {
                 const {data} = await axios({
