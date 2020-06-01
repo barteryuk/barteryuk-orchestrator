@@ -117,6 +117,7 @@ class Controller {
 
         //DECOMPOSE ARGS
         var {title, description, value, category, tagStr, photopath} = args
+        console.log('ini inputannyaaaa', args)
 
         //  DECODE TOKEN
         token = context.token
@@ -128,10 +129,13 @@ class Controller {
 
         // UPLOAD IMAGE TO CLOUDINARY FIRST
         // FROM YOUTUBE
-      const photo = await cloudinary.v2.uploader.upload(photopath)
-      console.log(photo)
+        console.log('ini photopath >>>>')
+        console.log(photopath)
+        // const photo = await cloudinary.v2.uploader.upload(photopath)
+        console.log('PHOTOOOOO >>>>>')
+        // console.log(photo)
 
-      var photoname = photo.url
+        var photoname = photopath
 
       try {
 
