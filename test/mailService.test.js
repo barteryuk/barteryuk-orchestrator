@@ -48,7 +48,6 @@ describe("Mail Service", () => {
             console.log(err);
             return done(err);
           } else {
-            console.log(res.body);
             expect(res.status).toBe(500);
             expect(res.body).toHaveProperty(
               "message",
