@@ -31,6 +31,7 @@ const typeDefs = gql`
     userId: String
     photo: String
     category: String
+    tags: [String]
   }
 
   type Product {
@@ -42,6 +43,7 @@ const typeDefs = gql`
     userId: String
     photo: String!
     category: String
+    tags: [String]
   }
 
   type ResponseProduct {
@@ -156,6 +158,7 @@ const typeDefs = gql`
       value: Float!
       photopath: String!
       category: String!
+      tagStr: String
     ): Product
 
 
