@@ -123,7 +123,7 @@ class Controller {
       const photo = await cloudinary.v2.uploader.upload(photopath)
       console.log(photo)
 
-      var photoname = `${photo.public_id}.${photo.format}`
+      var photoname = photo.url
 
       try {
 
