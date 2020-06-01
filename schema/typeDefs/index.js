@@ -169,6 +169,11 @@ const typeDefs = gql`
       collateralId: ID!
     ): ResponseProduct
 
+    rejectBid(
+      itemId: ID!
+      collateralId: ID!
+    ): ResponseProduct
+
   }
 `;
 
