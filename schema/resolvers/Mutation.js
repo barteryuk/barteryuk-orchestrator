@@ -40,8 +40,7 @@ const Mutation = {
 
   // PRODUCT
   addProduct: productController.addProduct,
-  bidItem: productController.bidItem
-
+  bidItem: productController.bidItem,
 
   // async uploadImage(parent, { filename }) {
   //   console.log("UPLOADING IMAGE @ ORCHESTRATOR");
@@ -64,9 +63,9 @@ const Mutation = {
   //     console.log("MAINDIR IS: ", mainDir);
   //     console.log("FILENAME IS: ", filename);
 
-    const path = require("path");
-    const mainDir = path.dirname(require.main.filename);
-    // const filename1 = `${}`
+  // const path = require("path");
+  // const mainDir = path.dirname(require.main.filename);
+  // const filename1 = `${}`
 
   //     // FROM YOUTUBE
   //     const photo = await cloudinary.v2.uploader.upload(filename)
