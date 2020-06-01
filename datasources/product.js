@@ -19,15 +19,23 @@ var result
 
 class Controller {
     static async findAll() {
+        console.log("FIND ALL ITEMS @ ORCHESTRATOR");
+
         try {
             const products = JSON.parse(await redis.get("products"));
+            console.log("HAVE WE GOT PRODUCTS?");
+            console.log(products);
             if (products) {
+                console.log("CACHE STILL ON");
                 return products;
             } else {
+                console.log("NO CACHE")
                 const {data} = await axios({
                     url: `${baseUrl}getall`,
                     method: "GET",
                 });
+                console.log("WHAT'S PRODUCTS ALL?");
+                console.log(data);
                 redis.set("products", JSON.stringify(data.data));
                 console.log("\n", "THIS IS RETRIEVED DATA", "\n");
                 console.log(data.data, "\n")
@@ -59,7 +67,7 @@ class Controller {
             console.log(arr, "\n");
 
 
-            const products = JSON.parse(await redis.get("products"));
+            const products = JSON.parse(await redis.get("products"))
             console.log("WHAT'S PRODUCT CACHE");
             console.log(products, "\n");
             if (products) {
@@ -197,9 +205,14 @@ class Controller {
 
         try {
             products = JSON.parse(await redis.get("products"));
+
+            console.log("WHAT IS REDIS' PRODUCTS?");
+            console.log(products);
             
             if (products) {
-                ownItems = products.data.filter(product => product.userId == payload._id)
+
+                // ownItems = products.data.filter(product => product.userId == payload._id)
+                ownItems = products.filter(product => product.userId == payload._id)
                 
             } else {
                 const {data} = await axios({
@@ -210,6 +223,8 @@ class Controller {
                     // }
                 });
                 products = data.data
+                console.log("IS PRODUCTS REALLY DATA.DATA?");
+                console.log(products);
                 redis.del("products");
                 redis.set("products", JSON.stringify(products));
                 ownItems = products.filter(product => product.userId == payload._id)
@@ -266,6 +281,8 @@ class Controller {
                     url: `${baseUrl}getall`,
                     method: "GET",
                 });
+                console.log("MAKING SURE NEWDATA.DATA");
+                console.log(newdata.data);
                 redis.set("products", JSON.stringify(newdata.data));
 
             return bidmsg
@@ -320,6 +337,8 @@ class Controller {
                     url: `${baseUrl}getall`,
                     method: "GET",
                 });
+                console.log("MAKING SURE NEWDATA.DATA");
+                console.log(newdata.data);
                 redis.set("products", JSON.stringify(newdata.data));
 
             return bidmsg
