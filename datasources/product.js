@@ -22,12 +22,20 @@ class Controller {
         console.log("FIND ALL ITEMS @ ORCHESTRATOR");
 
         try {
-            const products = JSON.parse(await redis.get("products"));
+            // products = JSON.parse(await redis.get("products"));
+            products = JSON.parse(await redis.get("products"))
+
             console.log("HAVE WE GOT PRODUCTS?");
             console.log(products);
             if (products) {
                 console.log("CACHE STILL ON");
-                return products;
+                // if(products.data) {
+                //     return products.data
+                // } else {
+                //     return products
+                // }
+                return products
+                
             } else {
                 console.log("NO CACHE")
                 const {data} = await axios({
@@ -41,7 +49,8 @@ class Controller {
                 console.log(data.data, "\n")
                 return data.data;
             }
-        } catch (error) {
+        } 
+        catch (error) {
             return console.log("error : ", error);
         }
     }
@@ -72,7 +81,13 @@ class Controller {
             console.log(products, "\n");
             if (products) {
                 redis.del("products");
-                redis.set("products", JSON.stringify(arr));
+
+                if(products.data) {
+                    redis.set("products", JSON.stringify(arr.data));
+                } else {
+                    redis.set("products", JSON.stringify(arr));
+                }
+                
             } else {
                 redis.set("products", JSON.stringify(arr));
             }
@@ -215,8 +230,11 @@ class Controller {
             
             if (products) {
 
-                // ownItems = products.data.filter(product => product.userId == payload._id)
-                ownItems = products.filter(product => product.userId == payload._id)
+                if(products.data) {
+                    ownItems = products.data.filter(product => product.userId == payload._id)
+                } else {
+                    ownItems = products.filter(product => product.userId == payload._id)
+                }                
                 
             } else {
                 const {data} = await axios({
@@ -243,7 +261,7 @@ class Controller {
     }
 
 
-    // SELECT COLLATERAL
+    // SELECT COLLATERAL TO BID
     static async bidItem (parent, args, context, info) {
         console.log("SELECT COLLATERAL @ ORCHESTRATOR");
         console.log(args);
@@ -261,6 +279,62 @@ class Controller {
             
             var {data} = await axios({
                     url: `${baseUrl}bid/${itemId}/with/${collateralId}`,
+                    method: "PUT"
+                    ,headers: {
+                        access_token: token
+                    }
+                });
+            
+            var bidmsg = data
+            
+            redis.del("products")
+
+            console.log("WHAT'S FROM AXIOS?");
+            console.log(bidmsg, "\n")
+
+            console.log("WHAT'S BIDPRODUCTID");
+            console.log(bidmsg.result.bidProductId, "\n")
+
+            console.log("WHAT'S BIDPRODUCTID");
+            console.log(bidmsg.result.bidProductId[bidmsg.result.bidProductId.length-1], "\n")
+
+            // REDIS REFETCH DATA
+             var newdata = await axios({
+                    url: `${baseUrl}getall`,
+                    method: "GET",
+                });
+                console.log("MAKING SURE NEWDATA.DATA");
+                console.log(newdata.data);
+                redis.set("products", JSON.stringify(newdata.data));
+
+            return bidmsg
+
+        }
+        catch (error) {
+            return console.log("error : ", error);
+        }
+
+    }
+
+
+    // SELECT CASE CLOSED! CLOSING BID
+    static async closeBid (parent, args, context, info) {
+        console.log("CLOSE BID @ ORCHESTRATOR");
+        console.log(args);
+        var itemId = args.itemId
+        var collateralId = args.collateralId
+
+        token = context.token
+        payload = jwt.verify(token, process.env.SECRET)
+
+        console.log("TOKEN IS: ,", token);
+        console.log("PAYLOAD IS ,", payload);
+
+        try {
+            
+            
+            var {data} = await axios({
+                    url: `${baseUrl}closeBid/${itemId}/with/${collateralId}`,
                     method: "PUT"
                     ,headers: {
                         access_token: token
