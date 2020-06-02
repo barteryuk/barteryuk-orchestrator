@@ -180,6 +180,8 @@ const typeDefs = gql`
       collateralId: ID!
     ): ResponseProduct
 
+    dropItem(itemId: ID!): ResponseProduct
+
   }
 `;
 
