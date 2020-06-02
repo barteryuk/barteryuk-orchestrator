@@ -144,13 +144,11 @@ class Controller {
 
         // UPLOAD IMAGE TO CLOUDINARY FIRST
         // FROM YOUTUBE
-        console.log('ini photopath >>>>')
-        console.log(photopath)
-        // const photo = await cloudinary.v2.uploader.upload(photopath)
-        console.log('PHOTOOOOO >>>>>')
-        // console.log(photo)
+        //   const photo = await cloudinary.v2.uploader.upload(photopath)
+        //   console.log(photo)
 
-        var photoname = photopath
+    //   var photoname = photo.url
+      var photoname = photopath
 
       try {
 
@@ -305,10 +303,8 @@ class Controller {
                 });
                 console.log("MAKING SURE NEWDATA.DATA");
                 console.log(newdata.data);
-                redis.set("products", JSON.stringify(newdata.data));
-
+                redis.set("products", JSON.stringify(newdata.data.data));
             return bidmsg
-
         }
         catch (error) {
             return console.log("error : ", error);
@@ -426,6 +422,52 @@ class Controller {
             return console.log("error : ", error);
         }
 
+    }
+
+    // DROP ITEM
+    static async dropItem (parent, args, context, info) {
+        console.log("FIND OWN ITEMS @ ORCHESTRATOR");
+
+        var {itemId} = args 
+
+        //  DECODE TOKEN
+        token = context.token
+        payload = jwt.verify(token, process.env.SECRET)
+
+        console.log("TOKEN IS: ,", token);
+        console.log("PAYLOAD IS ,", payload);
+
+        try {
+            
+            
+            var {data} = await axios({
+                    url: `${baseUrl}drop/${itemId}`,
+                    method: "DELETE"
+                    ,headers: {
+                        access_token: token
+                    }
+                });
+            
+            var delmsg = data
+            
+            redis.del("products")
+
+
+            // REDIS REFETCH DATA
+             var newdata = await axios({
+                    url: `${baseUrl}getall`,
+                    method: "GET",
+                });
+                console.log("MAKING SURE NEWDATA.DATA");
+                console.log(newdata.data);
+                redis.set("products", JSON.stringify(newdata.data));
+
+            return delmsg
+
+        }
+        catch (error) {
+            return console.log("error : ", error);
+        }
     }
 }
 

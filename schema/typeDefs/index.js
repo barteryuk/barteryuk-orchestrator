@@ -39,14 +39,13 @@ const typeDefs = gql`
     title: String!
     description: String
     bidProductId: [BidderProduct]
-    
     value: Float!
     userId: String
     photo: String!
-    category: String
+    category: String!
     tags: [String]
-    productOwnerRating: Float!
-    finalBidderRating: Float!
+    productOwnerRating: Float
+    finalBidderRating: Float
   }
 
   type ResponseProduct {
@@ -179,6 +178,8 @@ const typeDefs = gql`
       itemId: ID!
       collateralId: ID!
     ): ResponseProduct
+
+    dropItem(itemId: ID!): ResponseProduct
 
   }
 `;
