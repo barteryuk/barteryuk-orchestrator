@@ -19,21 +19,21 @@ describe("Payment Service", () => {
     });
   });
 
-  describe("Successful FindAll", () => {
-    test("should return array with status 200 and all payments", (done) => {
-      request(app)
-        .get("/payments")
-        .end((err, res) => {
-          if (err) {
-            console.log(err);
-            return done(err);
-          } else {
-            console.log(res.body);
-            expect(res.status).toBe(200);
-            expect(res.body).toEqual(expect.any(Array));
-            return done();
-          }
-        });
-    });
-  });
+  // describe("Successful FindAll", () => {
+  //   test("should return array with status 200 and all payments", (done) => {
+  //     request(app)
+  //       .get("/payments")
+  //       .end((err, res) => {
+  //         if (err) {
+  //           console.log(err);
+  //           return done(err);
+  //         } else {
+  //           console.log(res.body);
+  //           expect(res.status).toBe(200);
+  //           expect(res.body).toEqual(expect.any(Array));
+  //           return done();
+  //         }
+  //       });
+  //   });
+  // });
 });
