@@ -1,6 +1,7 @@
 const axios = require("axios");
 const Redis = require("ioredis");
 const redis = new Redis();
+const {ObjectId} = require("mongoose").Types;
 
 const baseUrl = process.env.USERAPI;
 
@@ -64,6 +65,50 @@ class Controller {
       return console.log("error : ", error);
     }
   }
+
+
+  static async findById(parent, args, context, info) {
+    try {
+      const { data } = await axios({
+        url: baseUrl,
+        method: "GET",
+      });
+
+      const users = JSON.parse(await redis.get("users"));
+      if (users) {
+        redis.del("users");
+        redis.set("users", JSON.stringify(data));
+      } else {
+        redis.set("users", JSON.stringify(data));
+      }
+
+      const [filtered] = data.filter((el) => String(el._id) == args.userId);
+      if (filtered !== undefined) {
+        return {
+          status: 200,
+          message: "User Found",
+          user: filtered,
+        };
+      } else {
+        return {
+          status: 404,
+          message: "Orchestrator Validation: User not found",
+          user: {
+            _id: "not found",
+            email: args.email,
+            password: "not found",
+            hp: "not found",
+            rating: 0,
+            quota: 0,
+            status: true,
+          },
+        };
+      }
+    } catch (error) {
+      return console.log("error : ", error);
+    }
+  }
+
 
   static async create(_, args) {
     try {

@@ -27,7 +27,7 @@ class Controller {
 
             console.log("HAVE WE GOT PRODUCTS?");
             console.log(products);
-            if (products) {
+            if (products && products != "") {
                 console.log("CACHE STILL ON");
                 // if(products.data) {
                 //     return products.data
@@ -76,10 +76,10 @@ class Controller {
             console.log(arr, "\n");
 
 
-            const products = JSON.parse(await redis.get("products"))
+            products = JSON.parse(await redis.get("products"))
             console.log("WHAT'S PRODUCT CACHE");
             console.log(products, "\n");
-            if (products) {
+            if (products && products != "") {
                 redis.del("products");
 
                 if(products.data) {
@@ -225,7 +225,7 @@ class Controller {
             console.log("WHAT IS REDIS' PRODUCTS?");
             console.log(products);
             
-            if (products) {
+            if (products && products != "") {
 
                 if(products.data) {
                     ownItems = products.data.filter(product => product.userId == payload._id)

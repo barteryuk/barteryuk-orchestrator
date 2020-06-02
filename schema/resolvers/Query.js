@@ -6,6 +6,7 @@ const paymentController = require("../../datasources/payment");
 const Query = {
   users: userController.findAll,
   user: userController.findByName,
+  userById: userController.findById,
   products: productController.findAll,
   product: productController.findOne,
   ownItems: productController.findOwnItems,

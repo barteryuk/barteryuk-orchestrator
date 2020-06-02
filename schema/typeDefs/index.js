@@ -30,6 +30,7 @@ const typeDefs = gql`
     value: Float
     userId: String
     photo: String
+    status: String
     category: String
     tags: [String]
   }
@@ -39,7 +40,7 @@ const typeDefs = gql`
     title: String!
     description: String
     bidProductId: [BidderProduct]
-    
+    status: String
     value: Float!
     userId: String
     photo: String!
@@ -126,6 +127,7 @@ const typeDefs = gql`
   type Query {
     users: [User]
     user(email: String!): ResponseUser
+    userById(userId: String!): ResponseUser
     admins: [Admin]
     admin(email: String!): ResponseAdmin
     payments: [Payment]
