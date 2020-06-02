@@ -51,7 +51,7 @@ const typeDefs = gql`
   }
 
   type ResponseProduct {
-    message: String,
+    message: String
     result: Product
   }
 
@@ -150,7 +150,7 @@ const typeDefs = gql`
     updateRating(FinalBidder: InputFinalBidder): ResponseUser
     updateStatus(email: String!): ResponseUser
 
-    sendMail(email: String!): ResponseMail
+    sendMail(id: ID!): ResponseMail
 
     addPayment(email: String!, topUp: Int!): ResponsePayment
     updatePayment(id: ID!, status: String!): ResponsePayment
@@ -166,24 +166,13 @@ const typeDefs = gql`
       tagStr: String
     ): Product
 
+    bidItem(itemId: ID!, collateralId: ID!): ResponseProduct
 
-    bidItem(
-      itemId: ID!
-      collateralId: ID!
-    ): ResponseProduct
+    closeBid(itemId: ID!, collateralId: ID!): ResponseProduct
 
-    closeBid(
-      itemId: ID!
-      collateralId: ID!
-    ): ResponseProduct
-
-    rejectBid(
-      itemId: ID!
-      collateralId: ID!
-    ): ResponseProduct
+    rejectBid(itemId: ID!, collateralId: ID!): ResponseProduct
 
     dropItem(itemId: ID!): ResponseProduct
-
   }
 `;
 
