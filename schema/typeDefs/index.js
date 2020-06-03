@@ -48,6 +48,10 @@ const typeDefs = gql`
     tags: [String]
     productOwnerRating: Float!
     finalBidderRating: Float!
+    finalBidderId: [User]
+    finalBiddersProductId: [Product]
+    topListingStatusDate: String
+
   }
 
   type ResponseProduct {
@@ -168,6 +172,8 @@ const typeDefs = gql`
     rejectBid(itemId: ID!, collateralId: ID!): ResponseProduct
 
     dropItem(itemId: ID!): ResponseProduct
+
+    setPrimeList(itemId: ID!, numDays: Float!): ResponseProduct
   }
 `;
 
