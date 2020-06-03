@@ -43,7 +43,8 @@ const Mutation = {
   bidItem: productController.bidItem,
   rejectBid: productController.rejectBid,
   closeBid: productController.closeBid,
-  dropItem: productController.dropItem
+  dropItem: productController.dropItem,
+  setPrimeList: productController.setPrimeList
 
   // async uploadImage(parent, { filename }) {
   //   console.log("UPLOADING IMAGE @ ORCHESTRATOR");

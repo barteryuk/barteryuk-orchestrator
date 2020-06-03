@@ -340,6 +340,63 @@ describe("PRODUCTS TESTS", () => {
     });
     // QUERY - OWN PRODUCTS END
 
+
+    // MUTATION - SET PRIMELIST
+    describe("MUTATION - SET PRIMELIST ", () => {
+        it("SUCCESSFUL - Server set primelist", async () => {
+            res = await productAPI.setPrimeList(
+                "",
+                {
+                    itemId: String(sampleProductId),
+                    numDays: 2,
+                },
+                {token: testToken},
+                ""
+            );
+            // expect(res).to.have.status(201);
+
+            console.log("this is res after updating primelist");
+            console.log(res);
+
+            // EXPECT PROPERTIES: COMPULSTORY ONES
+            expect(res).to.have.property("message").that.is.a("String");
+            expect(res).to.have.property("result").that.is.a("Object");
+        });
+
+        // it("FAILED - Server returns ERROR 400 IF CLOSE BID MISSING/WRONG PARAMS: TOKEN OR ID", async () => {
+        //     res = await productAPI.closeBid(
+        //         "",
+        //         {
+        //             itemId: String(sampleProductId),
+        //             collateralId: String(collateralId),
+        //         },
+        //         {token: `${testToken}-01`},
+        //         ""
+        //     );
+        //     // console.log("WHAT'S RES ERROR CLOSE BID?");
+        //     // console.log(res, "\n\n");
+        //     expect(res).to.have.property("status", 400);
+        //     expect(res).to.have.property("message").that.is.a("String");
+        // });
+
+        // it("FAILED - Server returns ERROR 404 IF CLOSE BID HAVE WRONG COLLATERAL/ITEM ID", async () => {
+        //     res = await productAPI.closeBid(
+        //         "",
+        //         {
+        //             itemId: "",
+        //             collateralId: "",
+        //         },
+        //         {token: testToken},
+        //         ""
+        //     );
+        //     // console.log("WHAT'S RES ERROR CLOSE BID?");
+        //     // console.log(res, "\n\n");
+        //     expect(res).to.have.property("status", 404);
+        //     expect(res).to.have.property("message").that.is.a("String");
+        // });
+    });
+    // MUTATION - SET PRIMELIST END
+
     // MUTATION - BID PRODUCT
     describe("MUTATION - bidItem", () => {
         it("SUCCESSFUL - Server bid a product", async () => {
@@ -408,6 +465,7 @@ describe("PRODUCTS TESTS", () => {
         });
     });
     // MUTATION - BID PRODUCTEND
+
 
     // MUTATION - ACCEPT BID
     describe("MUTATION - ACCEPT closeBid", () => {

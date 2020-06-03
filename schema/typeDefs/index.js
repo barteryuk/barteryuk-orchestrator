@@ -177,6 +177,8 @@ const typeDefs = gql`
     rejectBid(itemId: ID!, collateralId: ID!): ResponseProduct
 
     dropItem(itemId: ID!): ResponseProduct
+
+    setPrimeList(itemId: ID!, numDays: Float!): ResponseProduct
   }
 `;
 

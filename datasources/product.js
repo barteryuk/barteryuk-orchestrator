@@ -540,6 +540,80 @@ class Controller {
             }
         }
     }
+
+    // SETPRIMELIST
+    static async setPrimeList(parent, args, context, info) {
+        console.log("SETTING DATES FOR PRIME LIST");
+
+        var {itemId, numDays} = args
+        token = context.token;
+
+        try {
+
+
+            console.log("TOKEN IS: ,", token);
+            console.log("THIS IS INPUT PARAMS :");
+            console.log(itemId, numDays, token);
+
+
+            var result = await axios({
+                url: `${baseUrl}topList/${itemId}`,
+                method: 'PUT',
+                headers: {
+                    access_token: token,
+                },
+                data: {
+                    numOfDays: numDays
+                }
+            })
+
+            var updMsg = result.data
+
+
+            redis.del("products");
+
+            console.log("WHAT'S FROM AXIOS?");
+            console.log(updMsg, "\n");
+
+
+            // REDIS REFETCH DATA
+            var newdata = await axios({
+                url: `${baseUrl}getall`,
+                method: "GET",
+            });
+            // console.log("MAKING SURE NEWDATA.DATA");
+            // console.log(newdata.data);
+            redis.set("products", JSON.stringify(newdata.data.data));
+
+            return updMsg;
+
+
+        }
+        catch (error) {
+            // console.log("ERROR FIND OWN OBJECT");
+            // console.log(error);
+            // console.log(error.response);
+            if (error.name == "JsonWebTokenError") {
+                return {
+                    status: 400,
+                    message: "TOKEN INVALID",
+                };
+            } 
+            else {
+                if(error.response.status && error.response.statusText) {
+                    return {
+                        status: error.response.status,
+                        message: error.response.statusText,
+                    };
+                } else {
+                    return {
+                        status: error.response.data.status,
+                        message: error.response.data.message,
+                    };
+                }
+            }
+        }
+    }
 }
 
 module.exports = Controller;
