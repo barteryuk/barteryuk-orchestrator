@@ -32,7 +32,7 @@
     "supertest": "^4.0.2"
   },
   "scripts": {
-    "test": "nyc mocha --require @babel/register 'test/*.chai.js'",
+    "test": "nyc mocha --require @babel/register 'test/*.chai.js' --timeout 15000",
     "dev": "nodemon app.js",
     "start": "NODE_ENV=production node app.js"
   },
