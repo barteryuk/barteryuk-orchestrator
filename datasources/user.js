@@ -1,7 +1,7 @@
 const axios = require("axios");
 const Redis = require("ioredis");
 const redis = new Redis();
-const {ObjectId} = require("mongoose").Types;
+const { ObjectId } = require("mongoose").Types;
 
 const baseUrl = process.env.USERAPI;
 
@@ -66,7 +66,6 @@ class Controller {
     }
   }
 
-
   static async findById(parent, args, context, info) {
     try {
       const { data } = await axios({
@@ -108,7 +107,6 @@ class Controller {
       return console.log("error : ", error);
     }
   }
-
 
   static async create(_, args) {
     try {
@@ -201,7 +199,14 @@ class Controller {
         };
       }
     } catch (error) {
-      return console.log("error : ", error);
+      return {
+        status: error.response.data.status,
+        message: error.response.data.message,
+        user: {
+          _id: "not found",
+          ...args.user,
+        },
+      };
     }
   }
 
@@ -226,7 +231,6 @@ class Controller {
       if (data === null) {
         return {
           status: 404,
-          name: "Not Found",
           message: "Orchestrator Validation: User not found",
         };
       } else {
@@ -237,7 +241,10 @@ class Controller {
         };
       }
     } catch (error) {
-      return console.log("error : ", error);
+      return {
+        status: 500,
+        message: "Internal Server Error",
+      };
     }
   }
 
@@ -277,72 +284,78 @@ class Controller {
       });
 
       const [filteredToUpdate] = dataToUpdate.filter(
-        (el) => el._id === args.FinalBidder.FinalBidderId
+        (el) => el._id === args.FinalBidderId
       );
+      if (filteredToUpdate) {
+        filteredToUpdate.rating = (
+          (args.FinalBidderRating + filteredToUpdate.rating) /
+          2
+        ).toFixed(1);
 
-      filteredToUpdate.rating = (
-        (args.FinalBidder.FinalBidderRating + filteredToUpdate.rating) /
-        2
-      ).toFixed(1);
-
-      const { data } = await axios({
-        url: baseUrl + args.FinalBidder.FinalBidderId,
-        method: "PUT",
-        data: filteredToUpdate,
-      });
-
-      const users = JSON.parse(await redis.get("users"));
-      if (users) {
-        const notFiltered = users.filter(
-          (el) => el._id !== args.FinalBidder.FinalBidderId
-        );
-        const [filtered] = users.filter(
-          (el) => el._id === args.FinalBidder.FinalBidderId
-        );
-
-        if (filtered !== undefined) {
-          filtered.email = filteredToUpdate.email || null;
-          filtered.password = filteredToUpdate.password || null;
-          filtered.hp = filteredToUpdate.hp || null;
-          filtered.rating = filteredToUpdate.rating || null;
-          filtered.quota = filteredToUpdate.quota || null;
-          filtered.status = filteredToUpdate.status || null;
-          notFiltered.push(filtered);
-          redis.del("users");
-          redis.set("users", JSON.stringify(notFiltered));
-        }
-      } else {
-        const { data: dataGet } = await axios({
-          url: baseUrl,
-          method: "GET",
+        const { data } = await axios({
+          url: baseUrl + args.FinalBidderId,
+          method: "PUT",
+          data: filteredToUpdate,
         });
-        redis.set("users", JSON.stringify(dataGet));
-      }
-      if (data === null) {
-        return {
-          status: 404,
-          message: "Orchestrator Validation: User not found",
-        };
-      } else {
+        const users = JSON.parse(await redis.get("users"));
+        if (users) {
+          const notFiltered = users.filter(
+            (el) => el._id !== args.FinalBidderId
+          );
+          const [filtered] = users.filter(
+            (el) => el._id === args.FinalBidderId
+          );
+
+          if (filtered !== undefined) {
+            filtered.email = filteredToUpdate.email || null;
+            filtered.password = filteredToUpdate.password || null;
+            filtered.hp = filteredToUpdate.hp || null;
+            filtered.rating = filteredToUpdate.rating || null;
+            filtered.quota = filteredToUpdate.quota || null;
+            filtered.status = filteredToUpdate.status || null;
+            notFiltered.push(filtered);
+            redis.del("users");
+            redis.set("users", JSON.stringify(notFiltered));
+          }
+        } else {
+          const { data: dataGet } = await axios({
+            url: baseUrl,
+            method: "GET",
+          });
+          redis.set("users", JSON.stringify(dataGet));
+        }
         return {
           status: 200,
           message: "Orchestrator successfully updated rating to userService",
           user: data,
         };
+      } else {
+        return {
+          status: 404,
+          message: "Orchestrator Validation: User not found",
+        };
       }
     } catch (error) {
-      return console.log("error : ", error);
+      return {
+        status: 500,
+        message: "Internal Server Error",
+        user: {
+          _id: "not found",
+        },
+      };
     }
   }
 
   static async updateStatus(_, args) {
     try {
-      const {
-        data: [dataToUpdate],
-      } = await axios({
-        url: baseUrl + args.email,
+      const { data: dataToFilter } = await axios({
+        url: baseUrl,
         method: "GET",
       });
+
+      const [dataToUpdate] = dataToFilter.filter(
+        (el) => el.email === args.email
+      );
 
       dataToUpdate.status = !dataToUpdate.status;
 
@@ -366,7 +379,13 @@ class Controller {
         user: data,
       };
     } catch (error) {
-      return console.log("error : ", error);
+      return {
+        status: 500,
+        message: "Internal Server Error",
+        user: {
+          _id: "not found",
+        },
+      };
     }
   }
 }
