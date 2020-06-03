@@ -30,6 +30,7 @@ const typeDefs = gql`
     value: Float
     userId: String
     photo: String
+    status: String
     category: String
     tags: [String]
   }
@@ -39,6 +40,7 @@ const typeDefs = gql`
     title: String!
     description: String
     bidProductId: [BidderProduct]
+    status: String
     value: Float!
     userId: String
     photo: String!
@@ -49,7 +51,7 @@ const typeDefs = gql`
   }
 
   type ResponseProduct {
-    message: String,
+    message: String
     result: Product
   }
 
@@ -125,6 +127,7 @@ const typeDefs = gql`
   type Query {
     users: [User]
     user(email: String!): ResponseUser
+    userById(userId: String!): ResponseUser
     admins: [Admin]
     admin(email: String!): ResponseAdmin
     payments: [Payment]
@@ -147,7 +150,7 @@ const typeDefs = gql`
     updateRating(FinalBidder: InputFinalBidder): ResponseUser
     updateStatus(email: String!): ResponseUser
 
-    sendMail(email: String!): ResponseMail
+    sendMail(id: ID!): ResponseMail
 
     addPayment(email: String!, topUp: Int!): ResponsePayment
     updatePayment(id: ID!, status: String!): ResponsePayment
@@ -163,24 +166,13 @@ const typeDefs = gql`
       tagStr: String
     ): Product
 
+    bidItem(itemId: ID!, collateralId: ID!): ResponseProduct
 
-    bidItem(
-      itemId: ID!
-      collateralId: ID!
-    ): ResponseProduct
+    closeBid(itemId: ID!, collateralId: ID!): ResponseProduct
 
-    closeBid(
-      itemId: ID!
-      collateralId: ID!
-    ): ResponseProduct
-
-    rejectBid(
-      itemId: ID!
-      collateralId: ID!
-    ): ResponseProduct
+    rejectBid(itemId: ID!, collateralId: ID!): ResponseProduct
 
     dropItem(itemId: ID!): ResponseProduct
-
   }
 `;
 

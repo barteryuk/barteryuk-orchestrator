@@ -11,12 +11,10 @@ class Controller {
       if (admins) {
         return admins;
       } else {
-        console.log("tembus findAll");
         const { data } = await axios({
           url: baseUrl,
           method: "GET",
         });
-        console.log("tembus axios coy");
         redis.set("admins", JSON.stringify(data));
         return data;
       }
@@ -27,13 +25,10 @@ class Controller {
 
   static async findByName(parent, args, context, info) {
     try {
-      console.log("tembus 1");
-      console.log("ini args", args);
       const { data } = await axios({
-        url: "http:localhost:4002/admins",
+        url: baseUrl,
         method: "GET",
       });
-      console.log("tembus 2");
 
       const admins = JSON.parse(await redis.get("admins"));
       if (admins) {
@@ -76,6 +71,7 @@ class Controller {
           password: args.admin.password,
         },
       });
+
       const { data } = result;
       if (!data.errors) {
         const admins = JSON.parse(await redis.get("admins"));
@@ -149,7 +145,14 @@ class Controller {
         };
       }
     } catch (error) {
-      return console.log("error : ", error);
+      return {
+        status: error.response.data.status,
+        message: error.response.data.message,
+        admin: {
+          _id: "not found",
+          ...args.admin,
+        },
+      };
     }
   }
 
@@ -185,7 +188,14 @@ class Controller {
         };
       }
     } catch (error) {
-      return console.log("error : ", error);
+      return {
+        status: error.response.data.status,
+        message: error.response.data.message,
+        admin: {
+          _id: "not found",
+          ...args.admin,
+        },
+      };
     }
   }
 

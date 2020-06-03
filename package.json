@@ -4,26 +4,35 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
+    "@babel/register": "^7.10.1",
     "apollo-server": "^2.14.0",
     "apollo-server-express": "^2.14.1",
     "axios": "^0.19.2",
     "bcryptjs": "^2.4.3",
+    "chai": "^4.2.0",
+    "chai-http": "^4.3.0",
     "cloudinary": "^1.21.0",
     "graphql": "^15.0.0",
     "ioredis": "^4.17.1",
-    "jsonwebtoken": "^8.5.1"
+    "jsonwebtoken": "^8.5.1",
+    "mocha": "^7.2.0",
+    "mongoose": "^5.9.16"
   },
   "devDependencies": {
     "apollo-link": "^1.2.14",
     "apollo-link-http": "^1.5.17",
     "apollo-server-testing": "^2.14.1",
+    "babel-node": "0.0.1-security",
     "dotenv": "^8.2.0",
+    "isparta": "^4.1.1",
+    "istanbul": "^0.4.5",
     "jest": "^26.0.1",
     "node-fetch": "^2.6.0",
+    "nyc": "^15.1.0",
     "supertest": "^4.0.2"
   },
   "scripts": {
-    "test": "NODE_ENV=test jest --detectOpenHandles --runInBand",
+    "test": "nyc mocha --require @babel/register 'test/*.chai.js'",
     "dev": "nodemon app.js",
     "start": "NODE_ENV=production node app.js"
   },
