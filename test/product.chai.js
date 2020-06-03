@@ -13,6 +13,9 @@ var should = chai.should(); // Using Should style
 var res;
 var errors;
 
+var bidOK;
+var bidRejected;
+
 // CALL APIS
 const productAPI = require("../datasources/product");
 const userAPI = require("../datasources/user");
@@ -33,10 +36,14 @@ const testUserCreds1 = {
 var testToken;
 var testToken1;
 var product;
+let sampleProduct;
+let sampleProduct1;
 let sampleProductId;
 let sampleProductId1;
 var collateral;
 var collateralId;
+var collateral1;
+var collateralId1;
 var testUserId;
 var testUserId1;
 var testUser;
@@ -69,6 +76,8 @@ let wrongInput = {
 };
 var wrongId;
 var res;
+var mainBid;
+var backupBid;
 
 chai.use(chaiHttp);
 
@@ -136,6 +145,11 @@ before(async function () {
     // console.log("WHAT'S COLLATERAL?");
     // console.log(collateral, "\n");
     collateralId = collateral._id;
+
+    collateral1 = await productAPI.addProduct("", testInput, {token: testToken1}, "");
+    // console.log("WHAT'S COLLATERAL?");
+    // console.log(collateral, "\n");
+    collateralId1 = collateral1._id;
     console.log(" -- ADD COLLATERAL END --");
 
     console.log("---- PREPARATION TEST PRODUCTS END ---");
@@ -153,7 +167,8 @@ after(async function () {
         userAPI.delete("", {_id: testLoginCred1.userId}),
         productAPI.dropItem("", {itemId: String(sampleProductId)}, {token: testToken}, ""),
         productAPI.dropItem("", {itemId: String(sampleProductId1)}, {token: testToken}, ""),
-        productAPI.dropItem("", {itemId: String(collateralId)}, {token: testToken1}, ""),
+        // productAPI.dropItem("", {itemId: String(collateralId)}, {token: testToken1}, ""),
+        productAPI.dropItem("", {itemId: String(collateralId1)}, {token: testToken1}, "")
     ]);
     // await userAPI.delete("", {_id: testUserId});
     // await userAPI.delete("", {_id: testUserId1});
@@ -177,6 +192,7 @@ describe("PRODUCTS TESTS", () => {
 
             product = res;
 
+            sampleProduct = product;
             sampleProductId = product._id;
 
             // EXPECT PROPERTIES: COMPULSTORY ONES
@@ -198,6 +214,7 @@ describe("PRODUCTS TESTS", () => {
             res = await productAPI.addProduct("", testInput, {token: testToken}, "");
             product = res;
 
+            sampleProduct1 = product;
             sampleProductId1 = product._id;
             await redis.del("products");
             // EXPECT PROPERTIES: COMPULSTORY ONES
@@ -291,13 +308,11 @@ describe("PRODUCTS TESTS", () => {
     });
     // QUERY - ONE PRODUCT END
 
-
     // QUERY - OWN PRODUCTS
     describe("Query - find OWN PRODUCTS", () => {
-        
         it("SUCCESSFUL - Server returns all when OWN products can be found - SERVER", async () => {
-            redis.del("products")
-            res = await productAPI.findOwnItems("","",{token: testToken},"");
+            redis.del("products");
+            res = await productAPI.findOwnItems("", "", {token: testToken}, "");
             console.log("WHAT'S REALLY ALL RESULT?");
             console.log("RES FOR FINDING OWN ITEMS");
             console.log(res);
@@ -305,7 +320,7 @@ describe("PRODUCTS TESTS", () => {
         });
 
         it("SUCCESSFUL - Redis returns all when OWN PRODUCTS can be found - CACHE", async () => {
-            res = await productAPI.findOwnItems("","",{token: testToken},"");
+            res = await productAPI.findOwnItems("", "", {token: testToken}, "");
             console.log("WHAT'S REALLY ALL RESULT?");
             console.log("RES FOR FINDING OWN ITEMS @ CACHE");
             console.log(res);
@@ -313,7 +328,7 @@ describe("PRODUCTS TESTS", () => {
         });
 
         it("FAILED - Server returns status ? when OWN PRODUCT cannot be found", async () => {
-            res = await productAPI.findOwnItems("","",{token: `${testToken}01`},"");
+            res = await productAPI.findOwnItems("", "", {token: `${testToken}01`}, "");
             // console.log(res);
 
             expect(res).to.have.property("status", 400);
@@ -323,69 +338,241 @@ describe("PRODUCTS TESTS", () => {
     });
     // QUERY - OWN PRODUCTS END
 
-
     // MUTATION - BID PRODUCT
     describe("MUTATION - bidItem", () => {
         it("SUCCESSFUL - Server bid a product", async () => {
-            res = await productAPI.bidItem("", {
-                itemId: String(sampleProductId),
-                collateralId: String(collateralId)
-            }, {token: testToken1}, "");
+            res = await productAPI.bidItem(
+                "",
+                {
+                    itemId: String(sampleProductId),
+                    collateralId: String(collateralId),
+                },
+                {token: testToken1},
+                ""
+            );
             // expect(res).to.have.status(201);
 
             console.log("this is res.body for bid product");
             console.log(res);
-
+            mainBid = res;
 
             // EXPECT PROPERTIES: COMPULSTORY ONES
             expect(res).to.have.property("message").that.is.a("String");
             expect(res).to.have.property("result").that.is.a("Object");
-
         });
 
         it("FAILED - Server returns ERROR 400 IF  BID MISSING/WRONG PARAMS: TOKEN OR ID", async () => {
-            res = await productAPI.bidItem("", {
-                itemId: String(sampleProductId),
-                collateralId: String(collateralId)
-            }, {token: `${testToken1}-01`}, "");
+            res = await productAPI.bidItem(
+                "",
+                {
+                    itemId: String(sampleProductId),
+                    collateralId: String(collateralId),
+                },
+                {token: `${testToken1}-01`},
+                ""
+            );
             console.log("WHAT'S RES ERROR BID PRODUCT?");
             console.log(res, "\n\n");
             expect(res).to.have.property("status", 400);
             expect(res).to.have.property("message").that.is.a("String");
         });
+
+        // COUNTERBID
+        afterEach(async () => {
+            console.log("BACKUP BID FOR BACKUP");
+            backupBid = await productAPI.bidItem(
+                "",
+                {
+                    itemId: String(sampleProductId1),
+                    collateralId: String(collateralId1),
+                },
+                {token: testToken1},
+                ""
+            );
+
+            // console.log("HOW'S BACKUP BID");
+            // console.log(backupBid)
+
+            // return productAPI.bidItem("", {
+            //     itemId: String(sampleProductId1),
+            //     collateralId: String(collateralId1)
+            // }, {token: testToken1}, "")
+            // .then(response => {
+            //     console.log("HOW IS SECOND BID?");
+            //     console.log(response);
+            //     backupBid = response
+            //     // done()
+            // })
+        });
     });
     // MUTATION - BID PRODUCTEND
 
+    // MUTATION - ACCEPT BID
+    describe("MUTATION - ACCEPT closeBid", () => {
+        it("SUCCESSFUL - Server close a bid", async () => {
+            res = await productAPI.closeBid(
+                "",
+                {
+                    itemId: String(sampleProductId),
+                    collateralId: String(collateralId),
+                },
+                {token: testToken},
+                ""
+            );
+            // expect(res).to.have.status(201);
 
-    // MUTATION - REJECT BID 
+            // console.log("this is res.body for bid product");
+            // console.log(res);
+            bidOK = res;
+
+            // EXPECT PROPERTIES: COMPULSTORY ONES
+            expect(res).to.have.property("message").that.is.a("String");
+            expect(res).to.have.property("result").that.is.a("Object");
+        });
+
+        it("FAILED - Server returns ERROR 400 IF CLOSE BID MISSING/WRONG PARAMS: TOKEN OR ID", async () => {
+            res = await productAPI.closeBid(
+                "",
+                {
+                    itemId: String(sampleProductId),
+                    collateralId: String(collateralId),
+                },
+                {token: `${testToken}-01`},
+                ""
+            );
+            // console.log("WHAT'S RES ERROR CLOSE BID?");
+            // console.log(res, "\n\n");
+            expect(res).to.have.property("status", 400);
+            expect(res).to.have.property("message").that.is.a("String");
+        });
+
+        it("FAILED - Server returns ERROR 404 IF CLOSE BID HAVE WRONG COLLATERAL/ITEM ID", async () => {
+            res = await productAPI.closeBid(
+                "",
+                {
+                    itemId: "",
+                    collateralId: "",
+                },
+                {token: testToken},
+                ""
+            );
+            // console.log("WHAT'S RES ERROR CLOSE BID?");
+            // console.log(res, "\n\n");
+            expect(res).to.have.property("status", 404);
+            expect(res).to.have.property("message").that.is.a("String");
+        });
+    });
+    // MUTATION - ACCEPT BID END
+
+
+    // MUTATION - REJECT BID
     describe("MUTATION - rejectBid", () => {
-        it("SUCCESSFUL - Server reject a bid of a product", async () => {
-            res = await productAPI.rejectBid("", {
-                itemId: String(sampleProductId),
-                collateralId: String(collateralId)
-            }, {token: testToken1}, "");
+        it("SUCCESSFUL - Server REJECT a bid", async () => {
+            res = await productAPI.rejectBid(
+                "",
+                {
+                    itemId: String(sampleProductId1),
+                    collateralId: String(collateralId1),
+                },
+                {token: testToken},
+                ""
+            );
             // expect(res).to.have.status(201);
 
-            console.log("this is res.body for bid product");
-            console.log(res);
-
+            // console.log("this is res.body for bid product");
+            // console.log(res);
+            bidRejected = res;
 
             // EXPECT PROPERTIES: COMPULSTORY ONES
             expect(res).to.have.property("message").that.is.a("String");
             expect(res).to.have.property("result").that.is.a("Object");
-
         });
 
-        it("FAILED - Server returns ERROR 400 IF  BID MISSING/WRONG PARAMS: TOKEN OR ID", async () => {
-            res = await productAPI.bidItem("", {
-                itemId: String(sampleProductId),
-                collateralId: String(collateralId)
-            }, {token: `${testToken1}-01`}, "");
-            console.log("WHAT'S RES ERROR BID PRODUCT?");
+        it("FAILED - Server returns ERROR 400 IF REJECT BID MISSING/WRONG PARAMS: TOKEN", async () => {
+            res = await productAPI.rejectBid(
+                "",
+                {
+                    itemId: String(sampleProductId1),
+                    collateralId: String(collateralId1),
+                },
+                {token: `${testToken}-01`},
+                ""
+            );
+            // console.log("WHAT'S RES ERROR CLOSE BID?");
+            // console.log(res, "\n\n");
+            expect(res).to.have.property("status", 400);
+            expect(res).to.have.property("message").that.is.a("String");
+        });
+
+        it("FAILED - Server returns ERROR 404 IF REJECT BID HAVE WRONG COLLATERAL/ITEM ID", async () => {
+             res = await productAPI.rejectBid(
+                "",
+                {
+                    itemId: "",
+                    collateralId: "",
+                },
+                {token: testToken},
+                ""
+            );
+            // console.log("WHAT'S RES ERROR CLOSE BID?");
+            // console.log(res, "\n\n");
+            expect(res).to.have.property("status", 404);
+            expect(res).to.have.property("message").that.is.a("String");
+        });
+    });
+    // MUTATION - REJECT BID END
+
+    // MUTATION - DROP ITEM
+    describe("MUTATION - DELETE ITEM", () => {
+        console.log("WE TEST USING THE COLLATERALS");
+        it("SUCCESSFUL - Server delete a product", async () => {
+            res = await productAPI.dropItem(
+                "",
+                {
+                    itemId: String(collateralId),
+                },
+                {token: testToken1},
+                ""
+            );
+            // expect(res).to.have.status(201);
+
+            console.log("this is res.body for DELETE A PRODUCT");
+            console.log(res);
+
+            // EXPECT PROPERTIES: COMPULSTORY ONES
+            expect(res).to.have.property("message").that.is.a("String");
+            expect(res).to.have.property("result").that.is.a("Object");
+        });
+
+        it("FAILED - Server returns ERROR 400 IF DROP PRODUCT HAVE WRONG PARAMS: TOKEN", async () => {
+            res = await productAPI.dropItem(
+                "",
+                {
+                    itemId: String(collateralId1),
+                },
+                {token: `${testToken1}-01`},
+                ""
+            );
+            console.log("WHAT'S RES ERROR DROP PRODUCT?");
             console.log(res, "\n\n");
             expect(res).to.have.property("status", 400);
             expect(res).to.have.property("message").that.is.a("String");
         });
+
+        it("FAILED - Server returns ERROR 500 IF DROP PRODUCT HAVE WRONG ID", async () => {
+            res = await productAPI.dropItem(
+                "",
+                {
+                    itemId: `${String(collateralId1)}-01`,
+                },
+                {token: testToken1},
+                ""
+            );
+            // console.log("WHAT'S RES ERROR DROP PRODUCT?");
+            // console.log(res, "\n\n");
+            expect(res).to.have.property("status", 500);
+            expect(res).to.have.property("message").that.is.a("String");
+        });
     });
-    // MUTATION - BID PRODUCTEND
+    // MUTATION -  DROP ITEM END
 });
