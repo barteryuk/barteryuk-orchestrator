@@ -6,7 +6,8 @@ const { ApolloServer, AuthenticationError } = require("apollo-server");
 const typeDefs = require("./schema/typeDefs");
 const jwt = require("jsonwebtoken");
 const resolvers = require("./schema/resolvers");
-const PORT = process.env.PORT || 4000;
+// const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 3999;
 
 // USE CONTEXT
 const context = ({ req }) => {

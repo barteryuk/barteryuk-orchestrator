@@ -258,14 +258,16 @@ describe("PRODUCTS TESTS", () => {
             res = await productAPI.findAll();
             // console.log("WHAT'S REALLY ALL RESULT?");
             // console.log(res);
-            expect(res.data).to.be.an("Array");
+            // expect(res.data).to.be.an("Array");
+            expect(res).to.be.an("Array");
         });
 
         it("SUCCESSFUL - Redis returns all when ALL PRODUCTS can be found", async () => {
             res = await productAPI.findAll();
             // console.log("WHAT'S REALLY ALL RESULT?");
             // console.log(res);
-            expect(res.data).to.be.an("Array");
+            // expect(res.data).to.be.an("Array");
+            expect(res).to.be.an("Array");
         });
     });
     // QUERY - ALL PRODUCTS END

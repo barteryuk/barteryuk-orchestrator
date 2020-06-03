@@ -28,7 +28,7 @@ class Controller {
 
             // console.log("HAVE WE GOT PRODUCTS?");
             // console.log(products);
-            if (products && products.data.length > 0) {
+            if (products && products.length > 0) {
                 // console.log("CACHE STILL ON");
                 // if(products.data) {
                 //     return products.data
@@ -44,9 +44,9 @@ class Controller {
                 });
 
                 // console.log("WHAT'S PRODUCTS ALL?");
-                // console.log(result.data);
-                redis.set("products", JSON.stringify(result.data));
-                return result.data;
+                // console.log(result.data.data);
+                redis.set("products", JSON.stringify(result.data.data));
+                return result.data.data;
             }
         } catch (error) {
             return {
@@ -69,7 +69,7 @@ class Controller {
                 method: "GET",
             });
 
-            arr = result.data;
+            arr = result.data.data;
 
             // console.log("DATA IS");
             // console.log(arr, "\n");
@@ -77,14 +77,14 @@ class Controller {
             products = JSON.parse(await redis.get("products"));
             // console.log("WHAT'S PRODUCT CACHE");
             // console.log(products, "\n");
-            if (products && products.data.length > 0) {
+            if (products && products.length > 0) {
                 redis.del("products");
                 redis.set("products", JSON.stringify(arr));
             } else {
                 redis.set("products", JSON.stringify(arr));
             }
 
-            const [filtered] = arr.data.filter((el) => String(el._id) == String(productid));
+            const [filtered] = arr.filter((el) => String(el._id) == String(productid));
             // console.log("WHAT IS FILTERED?");
             // console.log(filtered, "\n");
             if (filtered !== undefined) {
@@ -158,8 +158,8 @@ class Controller {
                 },
             });
 
-            // console.log("OK, WHAT'S RESULT AFTER ADDING?");
-            // console.log(result.data);
+            console.log("OK, WHAT'S RESULT AFTER ADDING?");
+            console.log(result.data);
 
             var data = result.data.data;
 
@@ -167,9 +167,9 @@ class Controller {
                 products = JSON.parse(await redis.get("products"));
                 // console.log("WHAT'S PRODUCTS CACHE?");
                 // console.log(products);
-                if (products && products.data.length > 0) {
+                if (products && products.length > 0) {
                     // console.log("YEP, PRODUCT CACHE IS HERE! \n");
-                    products.data.push(data);
+                    products.push(data);
                     redis.del("products");
                     redis.set("products", JSON.stringify(products));
                 } else {
@@ -180,7 +180,7 @@ class Controller {
                     });
                     // console.log("IN CASE CACHE PRODUCTS GONE:");
                     // console.log(result, "\n");
-                    redis.set("products", JSON.stringify(result.data));
+                    redis.set("products", JSON.stringify(result.data.data));
                 }
             }
 
@@ -225,9 +225,9 @@ class Controller {
             // console.log("WHAT IS REDIS' PRODUCTS AKA CACHE?");
             // console.log(products, "\n\n\n");
 
-            if (products && products.data.length > 0) {
+            if (products && products.length > 0) {
                 // console.log("CACHE IS ON");
-                arrProducts = products.data;
+                arrProducts = products;
             } else {
                 await redis.del("products");
                 // console.log("CACHE IS OFF. GET A NEW ONE!");
@@ -238,13 +238,13 @@ class Controller {
                     //     access_token: token
                     // }
                 });
-                products = result.data;
+                products = result.data.data;
 
                 // console.log("THIS IS THE PRODUCTS WE ABOUT TO CACHE?");
                 // console.log(products, "\n\n\n");
 
                 await redis.set("products", JSON.stringify(products));
-                arrProducts = products.data;
+                arrProducts = products;
             }
 
             // console.log("IS PRODUCTS REALLY DATA.DATA?");
@@ -313,7 +313,7 @@ class Controller {
             });
             // console.log("MAKING SURE NEWDATA.DATA");
             // console.log(newdata.data);
-            redis.set("products", JSON.stringify(newdata.data));
+            redis.set("products", JSON.stringify(newdata.data.data));
 
             return bidmsg;
         } catch (error) {
@@ -376,7 +376,7 @@ class Controller {
             });
             // console.log("MAKING SURE NEWDATA.DATA");
             // console.log(newdata.data);
-            redis.set("products", JSON.stringify(newdata.data));
+            redis.set("products", JSON.stringify(newdata.data.data));
 
             return bidmsg;
         } 
@@ -448,7 +448,7 @@ class Controller {
             });
             // console.log("MAKING SURE NEWDATA.DATA");
             // console.log(newdata.data);
-            redis.set("products", JSON.stringify(newdata.data));
+            redis.set("products", JSON.stringify(newdata.data.data));
 
             return bidmsg;
         } 
@@ -511,7 +511,7 @@ class Controller {
             });
             // console.log("MAKING SURE NEWDATA.DATA");
             // console.log(newdata.data);
-            redis.set("products", JSON.stringify(newdata.data));
+            redis.set("products", JSON.stringify(newdata.data.data));
 
             return delmsg;
         } 

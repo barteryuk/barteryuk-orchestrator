@@ -48,6 +48,10 @@ const typeDefs = gql`
     tags: [String]
     productOwnerRating: Float!
     finalBidderRating: Float!
+    finalBidderId: [User]
+    finalBiddersProductId: [Product]
+    topListingStatusDate: String
+
   }
 
   type ResponseProduct {
