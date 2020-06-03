@@ -62,8 +62,8 @@ class Controller {
       };
     } catch (error) {
       return {
-        status: error.response.data.code,
-        message: error.response.data.errors,
+        status: 500,
+        message: "Internal Server Error",
         payment: {
           id: "not found",
           email: "not found",
@@ -83,30 +83,32 @@ class Controller {
       });
 
       if (resultFindById.data.data.status === "pending") {
-        const resultFindByName = await axios({
-          url: userUrl + resultFindById.data.data.email,
+        const { data: dataToUpdate } = await axios({
+          url: userUrl,
           method: "GET",
         });
-
+        const [resultFindByName] = dataToUpdate.filter(
+          (el) => el.email === resultFindById.data.data.email
+        );
         const resultFromPaymentService = await axios({
           url: baseUrl + args.id,
           method: "PUT",
           data: {
             email: resultFindById.data.data.email,
             topUp: resultFindById.data.data.topUp,
-            quota: resultFindByName.data[0].quota,
+            quota: resultFindByName.quota,
             proof: "url.jpg",
             status: args.status,
           },
         });
         if (args.status === "accept") {
-          resultFindByName.data[0].quota =
-            resultFindByName.data[0].quota + resultFindById.data.data.topUp;
+          resultFindByName.quota =
+            resultFindByName.quota + resultFindById.data.data.topUp;
 
           const resultFromUserService = await axios({
-            url: userUrl + resultFindByName.data[0]._id,
+            url: userUrl + resultFindByName._id,
             method: "PUT",
-            data: resultFindByName.data[0],
+            data: resultFindByName,
           });
         }
 
