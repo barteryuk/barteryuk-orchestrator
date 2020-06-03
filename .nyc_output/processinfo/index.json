@@ -1,1 +1,5 @@
+<<<<<<< HEAD
+{"processes":{"6d8952bb-35c1-4ece-89b2-dcab6ef348ff":{"parent":null,"children":[]}},"files":{"/Users/robin/Desktop/hacktiv8/phase3/w4/barteryuk/barteryuk-orchestrator/datasources/user.js":["6d8952bb-35c1-4ece-89b2-dcab6ef348ff"]},"externalIds":{}}
+=======
 {"processes":{"dfeccff8-33c7-4ac6-894f-88066552955e":{"parent":null,"children":[]}},"files":{"/home/sandboxadmin/PROJECTS/HACKTIV8/PHASE3/BARTERYUK/barteryuk-orchestrator/datasources/admin.js":["dfeccff8-33c7-4ac6-894f-88066552955e"],"/home/sandboxadmin/PROJECTS/HACKTIV8/PHASE3/BARTERYUK/barteryuk-orchestrator/helpers/jwt.js":["dfeccff8-33c7-4ac6-894f-88066552955e"],"/home/sandboxadmin/PROJECTS/HACKTIV8/PHASE3/BARTERYUK/barteryuk-orchestrator/datasources/product.js":["dfeccff8-33c7-4ac6-894f-88066552955e"],"/home/sandboxadmin/PROJECTS/HACKTIV8/PHASE3/BARTERYUK/barteryuk-orchestrator/helpers/customError.js":["dfeccff8-33c7-4ac6-894f-88066552955e"],"/home/sandboxadmin/PROJECTS/HACKTIV8/PHASE3/BARTERYUK/barteryuk-orchestrator/datasources/user.js":["dfeccff8-33c7-4ac6-894f-88066552955e"]},"externalIds":{}}
+>>>>>>> b1a1a890314a2c23a14784375e82f98d264caebc
