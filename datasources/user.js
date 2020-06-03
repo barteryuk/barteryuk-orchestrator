@@ -277,16 +277,16 @@ class Controller {
       });
 
       const [filteredToUpdate] = dataToUpdate.filter(
-        (el) => el._id === args.FinalBidder.FinalBidderId
+        (el) => el._id === args.FinalBidderId
       );
 
       filteredToUpdate.rating = (
-        (args.FinalBidder.FinalBidderRating + filteredToUpdate.rating) /
+        (args.FinalBidderRating + filteredToUpdate.rating) /
         2
       ).toFixed(1);
 
       const { data } = await axios({
-        url: baseUrl + args.FinalBidder.FinalBidderId,
+        url: baseUrl + args.FinalBidderId,
         method: "PUT",
         data: filteredToUpdate,
       });
@@ -294,10 +294,10 @@ class Controller {
       const users = JSON.parse(await redis.get("users"));
       if (users) {
         const notFiltered = users.filter(
-          (el) => el._id !== args.FinalBidder.FinalBidderId
+          (el) => el._id !== args.FinalBidderId
         );
         const [filtered] = users.filter(
-          (el) => el._id === args.FinalBidder.FinalBidderId
+          (el) => el._id === args.FinalBidderId
         );
 
         if (filtered !== undefined) {

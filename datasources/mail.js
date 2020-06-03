@@ -11,8 +11,9 @@ class Controller {
         url: userUrl + "/" + args.id,
         method: "GET",
       });
+      console.log('email=====', userUrl)
       const email = dataForEmail.data[0].email;
-
+      console.log('email=====2', email)
       const { data } = await axios({
         url: baseUrl + "sendNewBid",
         method: "POST",
